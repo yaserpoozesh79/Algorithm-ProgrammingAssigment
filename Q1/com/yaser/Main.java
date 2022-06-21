@@ -1,12 +1,10 @@
 package com.yaser;
 
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main{
-
-    private static int counter;
 
     public static void main(String[] args) {
         String[] inputs = inputValues();
@@ -31,41 +29,43 @@ public class Main{
      * @param items: an array of strings containing matrices' names
      */
     public static void parenthesize(String[] names){
-        ParenthesizationMold mold = new ParenthesizationMold(names);
-        counter = 0;
-        ArrayList<ParenthesizationMold> all = new ArrayList<>();
-        parenthesize(mold, all, 0, names.length-1, 0, 0);
-        for(ParenthesizationMold i:all)
+        String[] all = parenthesize(names, true);
+        for(String i:all)
             System.out.println(i);
     }
-    private static void parenthesize(ParenthesizationMold mold, ArrayList<ParenthesizationMold> all, int start1, int end1, int start2, int end2){
-        ParenthesizationMold aCopy;
-        if(start2 != end2 && start1 !=end1)
-            for(int i=start1 ; i<end1 ; i++){
-                for(int j=start2 ; j<end2 ; j++){
-                    aCopy = mold.copy();
-                    aCopy.addBreakPoint(start1, end1, i);
-                    aCopy.addBreakPoint(start2, end2, j);
-                    all.add(aCopy); 
-                }
-            }
-        else{
-            int start, end;
-            if(start2 != end2){
-                start=start2;
-                end=end2;
-            }else{
-                start=start1;
-                end=end1;
-            }
-            for(int i=start ; i<end ; i++){
-                aCopy = mold.copy();
-                aCopy.addBreakPoint(start, end, i);
-                if(aCopy.isFull())
-                    all.add(aCopy);
-                else
-                    parenthesize(aCopy, all, start, i, i+1, end);    
-            }
+    private static String[] parenthesize(String[] names,boolean isTopCall){
+        ArrayList<String> all = new ArrayList<>();
+        if(names.length <= 1){
+            all.add(stickTogether(names, "", ""));
+            return all.toArray(new String[1]);
         }
+        else if(names.length == 2){
+            if(isTopCall)
+                all.add(stickTogether(names, "", ""));
+            else
+                all.add(stickTogether(names, "(", ")"));
+            return all.toArray(new String[1]);
+        }
+        else{
+            for(int i=1 ; i<names.length ; i++)
+                for(String m:parenthesize(Arrays.copyOfRange(names, 0, i), false))
+                    for(String n:parenthesize(Arrays.copyOfRange(names, i, names.length), false)){
+                        String[] joint = {m,n};
+                        if(isTopCall)
+                            all.add(stickTogether(joint, "", ""));
+                        else
+                            all.add(stickTogether(joint, "(", ")"));
+                    }
+            return all.toArray(new String[all.size()]);
+        }
+    }
+    
+    public static String stickTogether(String[] elements, String start, String end){
+        StringBuilder r = new StringBuilder("");
+        r.append(start);
+        for(String i: elements)
+            r.append(i);
+        r.append(end);
+        return r.toString();    
     }
 }
