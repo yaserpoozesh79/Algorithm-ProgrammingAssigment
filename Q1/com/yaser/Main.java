@@ -19,20 +19,23 @@ public class Main{
         return result;    
     }
 
-    /**
-     * takes an array if strings (matrices' names) and 
-     * prints out all possible parenthesizations recursiveley.
-     * it uses a {@link ParenthesizationMold} to save the position of 
-     * {@code items} and parenthesis, and when it's filled up, one arrangement
-     * is printed.
-     *
-     * @param items: an array of strings containing matrices' names
-     */
+    
     public static void parenthesize(String[] names){
         String[] all = parenthesize(names, true);
         for(String i:all)
             System.out.println(i);
     }
+
+    /**
+     * takes an array if strings (matrices' names) and 
+     * prints out all possible parenthesizations recursiveley.
+     * the function breaks the sequence of names into two halves
+     * and then, for each arrangement of those halves, creates a whole arrangement.
+     *
+     * @param names : an array of strings containing matrices' names
+     * @param isTopCall : a flag specifying the top level function call.(aka: its true only for the top level call)
+     * @return : an array of strings containing all possible ways of parenthesizing n matrix names.
+     */
     private static String[] parenthesize(String[] names,boolean isTopCall){
         ArrayList<String> all = new ArrayList<>();
         if(names.length <= 1){
